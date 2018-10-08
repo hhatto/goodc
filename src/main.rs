@@ -99,7 +99,13 @@ fn main() {
                     println!("error: {}: {}", p.display(), err);
                 } else {
                     let output = String::from_utf8(printer.into_inner().into_inner()).unwrap();
-                    println!("{}: {}", output.trim_right().trim_left_matches("./"), rule.message);
+                    for line in output.lines() {
+                        let o = line.trim_right().trim_left_matches("./");
+                        if o.starts_with("goodcheck.yml:") {
+                            continue;
+                        }
+                        println!("{}:\t{}", o, rule.message);
+                    }
                 }
             }
         }
