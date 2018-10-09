@@ -12,10 +12,12 @@ use std::io::{BufWriter, Write};
 use std::path::Path;
 use clap::{App, SubCommand, AppSettings};
 use globset::{Glob, GlobSetBuilder};
-use grep::printer::Standard;
+use grep::cli;
+use grep::printer::{StandardBuilder, ColorSpecs};
 use grep::regex::RegexMatcher;
 use grep::searcher::{BinaryDetection, SearcherBuilder};
 use ignore::Walk;
+use termcolor::{BufferWriter, ColorChoice};
 
 mod config;
 
@@ -93,7 +95,17 @@ fn main() {
                 if !p.is_file() || globs.matches(p).is_empty() {
                     continue;
                 }
-                let mut printer = Standard::new_no_color(vec![]);
+
+                let bufwtr = BufferWriter::stdout(
+                    if cli::is_tty_stdout() {
+                        ColorChoice::Auto
+                    } else {
+                        ColorChoice::Never
+                    });
+                let buffer = bufwtr.buffer();
+                let mut printer = StandardBuilder::new()
+                    .color_specs(ColorSpecs::default_with_color())
+                    .build(buffer);
                 let result = searcher.search_path(&matcher, p, printer.sink_with_path(&matcher, p));
                 if let Err(err) = result {
                     println!("error: {}: {}", p.display(), err);
