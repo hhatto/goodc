@@ -7,20 +7,19 @@ extern crate ignore;
 extern crate serde_yaml;
 extern crate termcolor;
 
-use std::fs;
-use std::io::{BufWriter, Write};
-use std::path::Path;
-use clap::{App, SubCommand, AppSettings};
+use clap::{App, AppSettings, SubCommand};
 use globset::{Glob, GlobSetBuilder};
 use grep::cli;
-use grep::printer::{StandardBuilder, ColorSpecs};
+use grep::printer::{ColorSpecs, StandardBuilder};
 use grep::regex::RegexMatcher;
 use grep::searcher::{BinaryDetection, SearcherBuilder};
 use ignore::Walk;
+use std::fs;
+use std::io::{BufWriter, Write};
+use std::path::Path;
 use termcolor::{BufferWriter, ColorChoice};
 
 mod config;
-
 
 const INIT_TEMPLATE: &'static str = "rules:
   - id: com.example.1
@@ -96,12 +95,11 @@ fn main() {
                     continue;
                 }
 
-                let bufwtr = BufferWriter::stdout(
-                    if cli::is_tty_stdout() {
-                        ColorChoice::Auto
-                    } else {
-                        ColorChoice::Never
-                    });
+                let bufwtr = BufferWriter::stdout(if cli::is_tty_stdout() {
+                    ColorChoice::Auto
+                } else {
+                    ColorChoice::Never
+                });
                 let buffer = bufwtr.buffer();
                 let mut printer = StandardBuilder::new()
                     .color_specs(ColorSpecs::default_with_color())
