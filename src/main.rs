@@ -39,9 +39,9 @@ const INIT_TEMPLATE: &'static str = "rules:
 ";
 
 fn main() {
-    let matches = App::new("goodc")
+    let matches = App::new(env!("CARGO_PKG_NAME"))
         .setting(AppSettings::SubcommandRequired)
-        .version("0.1.0")
+        .version(env!("CARGO_PKG_VERSION"))
         .about("goodcheck clone")
         .subcommand(SubCommand::with_name("init").about("Generate a sample configuration file"))
         .subcommand(SubCommand::with_name("check").about("Run check with a configuration"))
