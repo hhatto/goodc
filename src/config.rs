@@ -1,5 +1,4 @@
 use serde::de::{self, Deserialize, Deserializer, MapAccess, Visitor};
-use serde_yaml;
 use std::error::Error;
 use std::fmt;
 use std::fs::File;
@@ -11,11 +10,13 @@ use void::Void;
 pub const DEFAULT_CONF: &'static str = "goodcheck.yml";
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Config {
     pub rules: Vec<Rule>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct Rule {
     pub id: String,
     #[serde(deserialize_with = "string_or_struct")]
@@ -28,6 +29,7 @@ pub struct Rule {
 }
 
 #[derive(Debug, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct RulePattern {
     pub string: Option<String>,
     pub regexp: Option<String>,

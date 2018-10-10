@@ -17,9 +17,11 @@ use ignore::Walk;
 use std::fs;
 use std::io::{BufWriter, Write};
 use std::path::Path;
-use termcolor::{BufferWriter, ColorChoice};
+use termcolor::{BufferWriter, Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
 mod config;
+#[macro_use]
+mod util;
 
 const INIT_TEMPLATE: &'static str = "rules:
   - id: com.example.1
@@ -41,9 +43,16 @@ fn main() {
         .setting(AppSettings::SubcommandRequired)
         .version("0.1.0")
         .about("goodcheck clone")
-        .subcommand(SubCommand::with_name("check").about("Run check with a configuration"))
         .subcommand(SubCommand::with_name("init").about("Generate a sample configuration file"))
+        .subcommand(SubCommand::with_name("check").about("Run check with a configuration"))
+        .subcommand(SubCommand::with_name("test").about("Test configuration file"))
+        .subcommand(SubCommand::with_name("version").about("Print version"))
         .get_matches();
+
+    if let Some(_matches) = matches.subcommand_matches("version") {
+        println!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
+        return;
+    }
 
     if let Some(_matches) = matches.subcommand_matches("init") {
         let yaml_file = Path::new("goodcheck.yml");
@@ -58,9 +67,57 @@ fn main() {
         return;
     }
 
-    let conf = config::load_config(config::DEFAULT_CONF).expect("fail read config");
+    let conf = config::load_config(config::DEFAULT_CONF);
+
+    if let Some(_matches) = matches.subcommand_matches("test") {
+        let mut stdout = StandardStream::stdout(if cli::is_tty_stdout() {
+            ColorChoice::Auto
+        } else {
+            ColorChoice::Never
+        });
+        let mut fail_config_count = 0;
+
+        // check yaml keys
+        match conf {
+            Ok(_) => {
+                set_ok_color!(stdout);
+                write!(&mut stdout, "ok").unwrap();
+                set_normal_color!(stdout);
+                println!(" - yaml format and config keys");
+            }
+            Err(e) => {
+                fail_config_count += 1;
+                let msg = e.description();
+                set_fail_color!(stdout);
+                write!(&mut stdout, "fail").unwrap();
+                set_normal_color!(stdout);
+                println!(" - {}", msg);
+            }
+        }
+
+        // result of checking
+        if fail_config_count == 0 {
+            set_ok_color!(stdout);
+            writeln!(&mut stdout, "configuration is valid").unwrap();
+            set_normal_color!(stdout);
+        } else {
+            set_fail_color!(stdout);
+            println!("configuration is invalid. fail: {}", fail_config_count);
+            set_normal_color!(stdout);
+        }
+
+        return;
+    }
 
     if let Some(_matches) = matches.subcommand_matches("check") {
+        match conf {
+            Ok(_) => {}
+            Err(_e) => {
+                println!("fail to read from config file");
+                return;
+            }
+        }
+        let conf = conf.unwrap();
         for rule in conf.rules {
             let mut glob_builder = GlobSetBuilder::new();
             match rule.glob {
