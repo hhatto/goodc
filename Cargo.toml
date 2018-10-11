@@ -2,7 +2,6 @@
 name = "goodc"
 version = "0.1.0"
 authors = ["Hideo Hattori <hhatto.jp@gmail.com>"]
-edition = "2018"
 
 [dependencies]
 clap = "2"
@@ -14,3 +13,7 @@ void = "1"
 ignore = "0.4"
 grep = "0.2"
 termcolor = "1"
+
+[[bin]]
+name = "goodc"
+path = "src/main.rs"
