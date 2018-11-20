@@ -25,10 +25,16 @@ pub fn execute(conf: Config) {
         let globs = glob_builder.build().expect("fail build globset");
 
         let matcher = if rule.pattern.string.is_some() {
-            RegexMatcher::new_line_matcher(&rule.pattern.string.unwrap()).unwrap()
+            RegexMatcher::new_line_matcher(&rule.pattern.string.unwrap())
         } else {
-            RegexMatcher::new_line_matcher(&rule.pattern.regexp.unwrap()).unwrap()
+            RegexMatcher::new_line_matcher(&rule.pattern.regexp.unwrap())
         };
+        if matcher.is_err() {
+            eprintln!("regex error: {}", matcher.err().unwrap());
+            continue;
+        }
+        let matcher = matcher.unwrap();
+
         let mut searcher = SearcherBuilder::new()
             .binary_detection(BinaryDetection::quit(b'\x00'))
             .line_number(true)
@@ -55,7 +61,7 @@ pub fn execute(conf: Config) {
                 .build(buffer);
             let result = searcher.search_path(&matcher, p, printer.sink_with_path(&matcher, p));
             if let Err(err) = result {
-                println!("error: {}: {}", p.display(), err);
+                eprintln!("error: {}: {}", p.display(), err);
             } else {
                 let output = String::from_utf8(printer.into_inner().into_inner()).unwrap();
                 for line in output.lines() {
