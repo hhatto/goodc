@@ -49,7 +49,7 @@ fn main() {
         match conf {
             Ok(_) => {}
             Err(_e) => {
-                println!("fail to read from config file");
+                println!("fail to read from config file: {}", _e);
                 return;
             }
         }
