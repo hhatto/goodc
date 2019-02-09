@@ -1,7 +1,7 @@
 use grep::cli;
 use globset::{Glob, GlobSetBuilder};
 use grep::searcher::{BinaryDetection, SearcherBuilder};
-use grep::regex::RegexMatcher;
+use grep::regex::RegexMatcherBuilder;
 use grep::printer::{ColorSpecs, StandardBuilder};
 use ignore::Walk;
 use termcolor::{BufferWriter, ColorChoice};
@@ -24,10 +24,17 @@ pub fn execute(conf: Config) {
         }
         let globs = glob_builder.build().expect("fail build globset");
 
-        let matcher = if rule.pattern.string.is_some() {
-            RegexMatcher::new_line_matcher(&rule.pattern.string.unwrap())
+        let mut builder = RegexMatcherBuilder::new();
+        builder.case_insensitive(!rule.pattern.case_sensitive);
+        if rule.pattern.multiline {
+            builder.multi_line(rule.pattern.multiline);
         } else {
-            RegexMatcher::new_line_matcher(&rule.pattern.regexp.unwrap())
+            builder.line_terminator(Some(b'\n'));
+        };
+        let matcher = if rule.pattern.string.is_some() {
+            builder.build(rule.pattern.string.unwrap().as_str())
+        } else {
+            builder.build(rule.pattern.regexp.unwrap().as_str())
         };
         if matcher.is_err() {
             eprintln!("regex error: {}", matcher.err().unwrap());
@@ -38,6 +45,7 @@ pub fn execute(conf: Config) {
         let mut searcher = SearcherBuilder::new()
             .binary_detection(BinaryDetection::quit(b'\x00'))
             .line_number(true)
+            .multi_line(rule.pattern.multiline)
             .build();
 
         for result in Walk::new("./") {
