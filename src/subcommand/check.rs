@@ -65,7 +65,7 @@ pub fn execute(conf: Config) {
             } else {
                 let output = String::from_utf8(printer.into_inner().into_inner()).unwrap();
                 for line in output.lines() {
-                    let o = line.trim_right().trim_left_matches("./");
+                    let o = line.trim_end().trim_start_matches("./");
                     if o.starts_with("goodcheck.yml:") {
                         continue;
                     }
