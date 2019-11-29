@@ -97,7 +97,7 @@ where
     deserializer.deserialize_any(StringOrStruct(PhantomData))
 }
 
-pub fn load_config<P: AsRef<Path>>(path: P) -> Result<Config, Box<Error>> {
+pub fn load_config<P: AsRef<Path>>(path: P) -> Result<Config, Box<dyn Error>> {
     let file = File::open(path)?;
     let conf = serde_yaml::from_reader(file)?;
     Ok(conf)
