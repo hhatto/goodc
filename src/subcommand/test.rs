@@ -2,7 +2,7 @@ use std::io::Write;
 use grep::cli;
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
-use config::Config;
+use crate::config::Config;
 
 
 pub fn execute(conf: &std::result::Result<Config, std::boxed::Box<dyn std::error::Error>>) {

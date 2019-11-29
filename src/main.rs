@@ -1,13 +1,5 @@
 #[macro_use]
 extern crate serde_derive;
-extern crate serde;
-extern crate clap;
-extern crate globset;
-extern crate grep;
-extern crate ignore;
-extern crate serde_yaml;
-extern crate termcolor;
-extern crate void;
 
 #[macro_use]
 pub mod util;

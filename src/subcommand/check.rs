@@ -6,7 +6,7 @@ use grep::printer::{ColorSpecs, StandardBuilder};
 use ignore::Walk;
 use termcolor::{BufferWriter, ColorChoice};
 
-use config::Config;
+use crate::config::Config;
 
 
 pub fn execute(conf: Config) {
