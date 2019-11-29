@@ -7,7 +7,7 @@ use std::path::Path;
 use std::str::FromStr;
 use void::Void;
 
-pub const DEFAULT_CONF: &'static str = "goodcheck.yml";
+pub const DEFAULT_CONF: &str = "goodcheck.yml";
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
