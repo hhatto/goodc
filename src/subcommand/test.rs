@@ -23,7 +23,7 @@ pub fn execute(conf: &std::result::Result<Config, std::boxed::Box<dyn std::error
         }
         Err(e) => {
             fail_config_count += 1;
-            let msg = e.description();
+            let msg = e.to_string();
             set_fail_color!(stdout);
             write!(&mut stdout, "fail").unwrap();
             set_normal_color!(stdout);
