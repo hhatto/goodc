@@ -6,17 +6,17 @@ pub mod util;
 mod subcommand;
 mod config;
 
-use clap::{App, AppSettings, SubCommand};
+use clap::Command;
 
 fn main() {
-    let matches = App::new(env!("CARGO_PKG_NAME"))
-        .setting(AppSettings::SubcommandRequired)
+    let matches = Command::new(env!("CARGO_PKG_NAME"))
+        .subcommand_required(true)
         .version(env!("CARGO_PKG_VERSION"))
         .about("goodcheck clone")
-        .subcommand(SubCommand::with_name("init").about("Generate a sample configuration file"))
-        .subcommand(SubCommand::with_name("check").about("Run check with a configuration"))
-        .subcommand(SubCommand::with_name("test").about("Test configuration file"))
-        .subcommand(SubCommand::with_name("version").about("Print version"))
+        .subcommand(Command::new("init").about("Generate a sample configuration file"))
+        .subcommand(Command::new("check").about("Run check with a configuration"))
+        .subcommand(Command::new("test").about("Test configuration file"))
+        .subcommand(Command::new("version").about("Print version"))
         .get_matches();
 
     if let Some(_matches) = matches.subcommand_matches("version") {

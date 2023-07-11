@@ -5,7 +5,7 @@ authors = ["Hideo Hattori <hhatto.jp@gmail.com>"]
 edition = "2018"
 
 [dependencies]
-clap = "2"
+clap = "4"
 serde = "1.0"
 serde_derive = "1.0"
 serde_yaml = "0.8"
