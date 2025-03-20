@@ -1,4 +1,4 @@
-use grep::cli;
+use std::io::IsTerminal;
 use globset::{Glob, GlobSetBuilder};
 use grep::searcher::{BinaryDetection, SearcherBuilder};
 use grep::regex::RegexMatcherBuilder;
@@ -58,7 +58,7 @@ pub fn execute(conf: Config) {
                 continue;
             }
 
-            let bufwtr = BufferWriter::stdout(if cli::is_tty_stdout() {
+            let bufwtr = BufferWriter::stdout(if std::io::stdout().is_terminal() {
                 ColorChoice::Auto
             } else {
                 ColorChoice::Never

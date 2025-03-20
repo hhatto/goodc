@@ -1,12 +1,11 @@
-use std::io::Write;
-use grep::cli;
+use std::io::{IsTerminal, Write};
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
 use crate::config::Config;
 
 
 pub fn execute(conf: &std::result::Result<Config, std::boxed::Box<dyn std::error::Error>>) {
-    let mut stdout = StandardStream::stdout(if cli::is_tty_stdout() {
+    let mut stdout = StandardStream::stdout(if std::io::stdout().is_terminal() {
         ColorChoice::Auto
     } else {
         ColorChoice::Never
